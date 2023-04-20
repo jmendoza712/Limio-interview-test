@@ -6,11 +6,12 @@ import Square from '../Square';
 /**
  * A board for the game of tic-tac-toe.  A 3x3 square.
  */
-const Board = ({onClick, squares}) => {
+const Board = ({onClick, squares, bgColor}) => {
     const renderSquare = (i) => (
         <Square
             value={squares[i]}
             onClick={() => onClick(i)}
+            bgColor={{backgroundColor: bgColor[i]}}
         />
     );
 
@@ -40,6 +41,7 @@ Board.propTypes = {
      *  The 1..9 array of squares to display
      */
     squares: PropTypes.array.isRequired,
+    bgColor: PropTypes.array.isRequired,
 
     /**
      *  The handler for when a square is clicked

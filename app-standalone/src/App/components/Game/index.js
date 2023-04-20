@@ -5,7 +5,10 @@ import Board from "../Board";
  * A game of tic-tac-toe.
  */
 const Game = () => {
-    const [gameHistory, setGameHistory] = useState([{ squares: Array(9).fill(null) }]); // Start of game
+    const [gameHistory, setGameHistory] = useState([{
+                                                      squares: Array(9).fill(null),
+                                                      background: Array(9).fill('white')
+                                                    }]); // Start of game
     const [stepNumber, setStepNumber] = useState(0);
     const [xIsNext, setXisNext] = useState(true);
 
@@ -24,7 +27,11 @@ const Game = () => {
         for (let i = 0; i < lines.length; i++) {
             const [a, b, c] = lines[i];
             if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-                return squares[a];
+                // return squares[a];
+                return {
+                          player: squares[a],
+                          combination: lines[i]
+                       };
             }
         }
 
@@ -35,6 +42,7 @@ const Game = () => {
         const history = gameHistory.slice(0, stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
+        const background = current.background.slice();
 
         if (calculateWinner(squares) || squares[i]) {
             return;
@@ -42,7 +50,14 @@ const Game = () => {
 
         squares[i] = xIsNext ? "X" : "O";
 
-        setGameHistory([...history, { squares }]);
+        const winner = calculateWinner(squares)
+        if (winner) {
+          for (let i = 0; i < winner.combination.length; i++) {
+            background[winner.combination[i]] = 'yellow';
+          }
+        }
+
+        setGameHistory([...history, { squares, background }]);
         setStepNumber(history.length);
         setXisNext(!xIsNext);
     };
@@ -79,6 +94,7 @@ const Game = () => {
                 <Board
                     squares={current.squares}
                     onClick={i => handleClick(i)}
+                    bgColor={current.background}
                 />
             </div>
             <div className="game-info">
