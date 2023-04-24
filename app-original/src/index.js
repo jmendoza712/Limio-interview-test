@@ -54,10 +54,19 @@ class Game extends React.Component {
                     background: Array(9).fill('white')
                 }
             ],
+            players: {
+              X: '',
+              O: '',
+            },
+            score: {
+              X: 0,
+              O: 0,
+            },
             stepNumber: 0,
             xIsNext: true,
-            // background: Array(9).fill('white'),
         };
+        this.playerXNameChange = this.playerXNameChange.bind(this);
+        this.playerONameChange = this.playerONameChange.bind(this);
     }
 
     handleClick(i) {
@@ -65,6 +74,7 @@ class Game extends React.Component {
       const current = history[history.length - 1];
       const squares = current.squares.slice();
       const background = current.background.slice();
+      const score = this.state.score;
 
       if (squares[i] || calculateWinner(squares)) {
         return;
@@ -78,6 +88,7 @@ class Game extends React.Component {
         for (let i = 0; i < winner.combination.length; i++) {
           background[winner.combination[i]] = 'yellow';
         }
+        winner.player === 'X' ? score.X++ : score.O++;
       }
 
       this.setState({
@@ -87,10 +98,35 @@ class Game extends React.Component {
                   background: background
               }
           ]),
+          score: {
+            X: score.X,
+            O: score.O,
+          },
           stepNumber: history.length,
           xIsNext: !this.state.xIsNext,
-          // background: background,
       });
+    }
+
+    playerXNameChange(event) {
+      const players = this.state.players;
+      this.setState({
+          players:
+            {
+              X: event.target.value,
+              O: players.O
+            }
+      })
+    }
+
+    playerONameChange(event) {
+      const players = this.state.players;
+      this.setState({
+          players:
+            {
+              X: players.X,
+              O: event.target.value
+            }
+      })
     }
 
     jumpTo(step) {
@@ -100,13 +136,49 @@ class Game extends React.Component {
         });
     }
 
+    // TESTING UPDATING BACKGROUND OF WINNING COMB USING componentDidUpadte
+    // componentDidUpdate(prevProps, prevState) {
+    //     const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    //     const current = history[history.length - 1];
+    //     const squares = current.squares.slice();
+    //     const background = current.background.slice();
+    //     const winner = calculateWinner(squares)
+    //       console.log('componentDidUpdate')
+
+    //   if (background !== prevState.history[prevState.history.length - 1].background) {
+    //     console.log(prevState.history[prevState.history.length - 1].background);
+    //     console.log(background);
+      //   if (winner) {
+      //     console.log('componentDidUpdate')
+      //     this.setState({
+      //       xIsNext: !this.state.xIsNext,
+      //     })
+        //   for (let i = 0; i < winner.combination.length; i++) {
+        //     background[winner.combination[i]] = 'yellow';
+        //   }
+        //   this.setState({
+        //     history: history.concat([
+        //       {
+        //         // squares: squares,
+        //         background: background
+        //       }
+        //     ])
+        //   })
+        // }
+      // }
+    // }
+
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
+        const players = this.state.players
+        const score = this.state.score;
+        console.log('rendering this.state')
+        console.log(this.state)
         // const background = this.state.background.slice();
         // console.log(this.state.background)
-        console.log(history)
+        // console.log(history)
 
 
         const moves = history.map((step, move) => {
@@ -122,24 +194,44 @@ class Game extends React.Component {
 
         let status;
         if (winner) {
-            status = "Winner: " + winner.player;
+            status = "Winner: " + players[winner.player];
         } else {
-            status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+            status = "Next player: " + (this.state.xIsNext ? players.X : players.O);
+            // status = "Next player: " + (this.state.xIsNext ? "X" : "O");
         }
 
         return (
-            <div className="game">
-                <div className="game-board">
-                    <Board
-                        squares={current.squares}
-                        onClick={i => this.handleClick(i)}
-                        bgColor={current.background}
-                        // bgColor={this.state.background}
-                    />
+            <div className='container'>
+                <div className='scoringboard'>
+                    <div className='player-x'>
+                        <label>Player X:</label>
+                        <input className="player-x-name" name='X' value={players.X} onChange={e => this.playerXNameChange(e)}/>
+                        <div>Games won: {score.X}</div>
+                    </div>
+                    <div className='player-o'>
+                        <label>Player O:</label>
+                        <input className="player-o-name" name='O' value={players.O} onChange={e => this.playerONameChange(e)}/>
+                        <div>Games won: {score.O}</div>
+                    </div>
                 </div>
-                <div className="game-info">
-                    <div>{status}</div>
-                    <ol>{moves}</ol>
+                <div className='game-control'>
+                    <button type='star-button' onClick={e => this.handleClick(e)}>
+                      Start
+                    </button>
+                </div>
+                <div className="game">
+                    <div className="game-board">
+                        <Board
+                            squares={current.squares}
+                            onClick={e => this.handleClick(e)}
+                            bgColor={current.background}
+                            // bgColor={this.state.background}
+                        />
+                    </div>
+                    <div className="game-info">
+                        <div>{status}</div>
+                        <ol>{moves}</ol>
+                    </div>
                 </div>
             </div>
         );

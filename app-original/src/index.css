@@ -48,3 +48,20 @@ ol, ul {
 .game-info {
     margin-left: 20px;
 }
+
+.scoringboard, .player-x {
+    padding: 0px 0px 20px 0px;
+}
+
+.player-x-name {
+  margin-left: 20px;
+}
+
+.player-o-name {
+    margin-left: 16px;
+}
+
+.game-control {
+  padding: 0px 0px 20px 0px;
+  display: flex;
+}
