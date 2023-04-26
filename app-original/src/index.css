@@ -41,7 +41,7 @@ ol, ul {
 }
 
 .game {
-    display: flex;
+    display: none;
     flex-direction: row;
 }
 
@@ -53,15 +53,15 @@ ol, ul {
     padding: 0px 0px 20px 0px;
 }
 
-.player-x-name {
-  margin-left: 20px;
-}
-
-.player-o-name {
-    margin-left: 16px;
+.start-again-button {
+  margin: 0px 10px 0px 10px;
 }
 
 .game-control {
   padding: 0px 0px 20px 0px;
   display: flex;
+}
+
+.player-name {
+  margin-left: 20px;
 }

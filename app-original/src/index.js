@@ -69,7 +69,35 @@ class Game extends React.Component {
         this.playerONameChange = this.playerONameChange.bind(this);
     }
 
+    // Events handler logic (if for the board; else for buttons)
     handleClick(i) {
+      if (typeof i === "number") {
+          console.log('Event is a number');
+
+          this.clickOnBoard(i);
+      } else {
+          console.log('Event is an object');
+
+          switch (i.target.className) {
+            case 'start-button':
+              this.clickOnStart(i);
+              break;
+
+            case 'start-again-button':
+              this.clickOnStartAgain();
+              break;
+
+            case 'reset-button':
+              this.clickOnReset();
+              break;
+
+            default:
+              break;
+          }
+      }
+    }
+
+    clickOnBoard(i) {
       const history = this.state.history.slice(0, this.state.stepNumber + 1);
       const current = history[history.length - 1];
       const squares = current.squares.slice();
@@ -83,6 +111,7 @@ class Game extends React.Component {
       squares[i] = this.state.xIsNext ? "X" : "O";
 
       // Changing background colour of winning combination
+      // and the game's score
       const winner = calculateWinner(squares)
       if (winner) {
         for (let i = 0; i < winner.combination.length; i++) {
@@ -105,6 +134,43 @@ class Game extends React.Component {
           stepNumber: history.length,
           xIsNext: !this.state.xIsNext,
       });
+    }
+
+    clickOnStart(i) {
+        const htmlStartButtonTag = document.querySelector('.start-button');
+        // const htmlStartAgainButtonTag = document.querySelector('.start-again-button');
+
+        // htmlStartButtonTag.innerHTML = 'Start again';
+        // htmlStartButtonTag.className = 'Start-again-button';
+        htmlStartButtonTag.disabled = 'true';
+        // htmlStartAgainButtonTag.removeAttribute('disabled');
+
+        const htmlGameTag = document.querySelector('.game');
+        htmlGameTag.style.display = 'flex';
+
+        const htmlInput = document.querySelectorAll('.player-name');
+        for (let i = 0; i < htmlInput.length; i++) {
+          htmlInput[i].disabled = 'true';
+        }
+    }
+
+    clickOnStartAgain() {
+      console.log(document.querySelector('.start-again-button'));
+        this.setState({
+            history: [
+                {
+                    squares: Array(9).fill(null),
+                    background: Array(9).fill('white')
+                }
+            ],
+            stepNumber: 0,
+            xIsNext: true,
+            gameStarted: false,
+        });
+    }
+
+    clickOnReset() {
+      window.location.reload(true);
     }
 
     playerXNameChange(event) {
@@ -136,46 +202,14 @@ class Game extends React.Component {
         });
     }
 
-    // TESTING UPDATING BACKGROUND OF WINNING COMB USING componentDidUpadte
-    // componentDidUpdate(prevProps, prevState) {
-    //     const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    //     const current = history[history.length - 1];
-    //     const squares = current.squares.slice();
-    //     const background = current.background.slice();
-    //     const winner = calculateWinner(squares)
-    //       console.log('componentDidUpdate')
-
-    //   if (background !== prevState.history[prevState.history.length - 1].background) {
-    //     console.log(prevState.history[prevState.history.length - 1].background);
-    //     console.log(background);
-      //   if (winner) {
-      //     console.log('componentDidUpdate')
-      //     this.setState({
-      //       xIsNext: !this.state.xIsNext,
-      //     })
-        //   for (let i = 0; i < winner.combination.length; i++) {
-        //     background[winner.combination[i]] = 'yellow';
-        //   }
-        //   this.setState({
-        //     history: history.concat([
-        //       {
-        //         // squares: squares,
-        //         background: background
-        //       }
-        //     ])
-        //   })
-        // }
-      // }
-    // }
-
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
         const players = this.state.players
         const score = this.state.score;
-        console.log('rendering this.state')
-        console.log(this.state)
+        // console.log('rendering this.state')
+        // console.log(this.state)
         // const background = this.state.background.slice();
         // console.log(this.state.background)
         // console.log(history)
@@ -205,25 +239,31 @@ class Game extends React.Component {
                 <div className='scoringboard'>
                     <div className='player-x'>
                         <label>Player X:</label>
-                        <input className="player-x-name" name='X' value={players.X} onChange={e => this.playerXNameChange(e)}/>
+                        <input className="player-name" name='X' value={players.X} onChange={e => this.playerXNameChange(e)}/>
                         <div>Games won: {score.X}</div>
                     </div>
                     <div className='player-o'>
                         <label>Player O:</label>
-                        <input className="player-o-name" name='O' value={players.O} onChange={e => this.playerONameChange(e)}/>
+                        <input className="player-name" name='O' value={players.O} onChange={e => this.playerONameChange(e)}/>
                         <div>Games won: {score.O}</div>
                     </div>
                 </div>
                 <div className='game-control'>
-                    <button type='star-button' onClick={e => this.handleClick(e)}>
+                    <button className='start-button' onClick={e => this.handleClick(e)}>
                       Start
+                    </button>
+                    <button className='start-again-button' onClick={e => this.handleClick(e)}>
+                      Start again
+                    </button>
+                    <button className='reset-button' onClick={e => this.handleClick(e)}>
+                      Reset
                     </button>
                 </div>
                 <div className="game">
                     <div className="game-board">
                         <Board
                             squares={current.squares}
-                            onClick={e => this.handleClick(e)}
+                            onClick={i => this.handleClick(i)}
                             bgColor={current.background}
                             // bgColor={this.state.background}
                         />
